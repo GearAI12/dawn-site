@@ -1,45 +1,409 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dawn – לקום מוקדם</title>
+<title>Dawn — שעון מעורר עם משימות</title>
+<meta name="description" content="Dawn הוא שעון מעורר בעברית שאי אפשר סתם לכבות: משלימים משימה אמיתית — שכיבות סמיכה, תרגילי חשבון, צילום השמיים — ורק אז הוא נרגע. כולל דילוג אוטומטי על שבת וחג.">
+<link rel="icon" type="image/png" href="assets/app-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap">
 <style>
-  :root { --black:#0c0c0c; --yellow:#ffcc00; }
-  * { margin:0; box-sizing:border-box; }
-  body { font-family:-apple-system,"Segoe UI",sans-serif; background:#fff; color:var(--black);
-         display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:48px 24px; text-align:center; }
-  .logo { width:120px; height:120px; margin-bottom:28px; }
-  h1 { font-size:44px; font-weight:800; letter-spacing:-.5px; }
-  .tag { font-size:20px; color:#555; margin-top:10px; }
-  .soon { margin-top:28px; display:inline-block; background:var(--black); color:#fff;
-          padding:14px 28px; border-radius:999px; font-weight:600; }
-  .desc { max-width:420px; margin-top:32px; line-height:1.7; color:#444; }
-  footer { margin-top:auto; padding-top:48px; font-size:14px; }
-  footer a { color:#777; margin:0 10px; }
+  :root{
+    --bg:#F4F4F4;
+    --surface:#FFFFFF;
+    --surface-inset:#EFEFEF;
+    --text:#000000;
+    --text-2:#6B6B6B;
+    --text-3:#9B9B9B;
+    --divider:#E5E5E5;
+    --accent:#FFCC00;
+    --accent-deep:#F5B800;
+    --orb:#6E56CF;
+    --radius:24px;
+    /* measured screen window inside assets/phone-frame.png */
+    --scr-left:7.2%;
+    --scr-top:3.3%;
+    --scr-w:88.0%;
+    --scr-h:94.9%;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Heebo',-apple-system,'Segoe UI',Arial,sans-serif;
+    background:var(--bg);color:var(--text);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{max-width:100%;display:block}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+  /* ─── nav ─── */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--divider);
+  }
+  .nav{display:flex;align-items:center;gap:28px;height:68px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:22px;letter-spacing:.2px;color:var(--text)}
+  .logo-mark{width:30px;height:30px;flex:none;border-radius:8px}
+  .nav-links{display:flex;gap:24px;font-size:15px;color:var(--text-2);font-weight:500}
+  .nav-links a:hover{color:var(--text)}
+  .nav-spacer{flex:1}
+
+  /* ─── store badges (official artwork) ─── */
+  .badges{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .badge{display:inline-block;transition:transform .15s ease,opacity .15s ease}
+  .badge:hover{transform:translateY(-2px)}
+  .badge img{height:52px;width:auto}
+  .nav .badge img{height:38px}
+  .badges-note{margin-top:12px;font-size:13px;color:var(--text-3)}
+
+  /* ─── device frame composite ─── */
+  .device{position:relative;filter:drop-shadow(0 26px 40px rgba(0,0,0,.28))}
+  .device .frame{position:relative;z-index:2;width:100%}
+  .device .shot{
+    position:absolute;z-index:1;
+    left:var(--scr-left);top:var(--scr-top);
+    width:var(--scr-w);height:var(--scr-h);
+    object-fit:cover;object-position:top;
+    border-radius:13.5% / 6.1%;
+    background:var(--surface-inset);
+  }
+
+  /* ─── hero ─── */
+  .hero{padding:72px 0 40px;overflow:hidden}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
+  .chip{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--surface);border:1px solid var(--divider);
+    border-radius:999px;padding:7px 16px;font-size:14px;font-weight:500;color:var(--text-2);
+    box-shadow:0 1px 2px rgba(0,0,0,.04);
+  }
+  .chip .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none}
+  .hero h1{
+    font-size:clamp(40px,6vw,68px);font-weight:900;line-height:1.08;
+    letter-spacing:-.5px;margin:22px 0 20px;text-wrap:balance;
+  }
+  .hero p.lead{font-size:19px;color:var(--text-2);max-width:32em;margin-bottom:30px}
+
+  .phones{position:relative;height:600px}
+  .phones::before{
+    content:"";position:absolute;inset:6% 0;z-index:0;border-radius:50%;
+    background:radial-gradient(closest-side, color-mix(in srgb, var(--orb) 26%, transparent), transparent 74%);
+  }
+  .phones .device{position:absolute;width:262px}
+  .phones .device.a{right:26px;top:24px;transform:rotate(6deg);z-index:2}
+  .phones .device.b{left:12px;top:120px;transform:rotate(-7deg)}
+
+  /* ─── sections ─── */
+  section{padding:84px 0}
+  .eyebrow{
+    display:inline-block;font-size:13px;font-weight:700;letter-spacing:.14em;
+    color:var(--accent-deep);text-transform:uppercase;margin-bottom:12px;
+  }
+  h2{font-size:clamp(28px,4vw,42px);font-weight:900;line-height:1.15;letter-spacing:-.3px;text-wrap:balance}
+  .sec-sub{color:var(--text-2);font-size:17px;margin-top:12px;max-width:36em}
+  .sec-head{max-width:640px;margin-bottom:48px}
+
+  /* how it works */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .step{
+    background:var(--surface);border-radius:var(--radius);
+    padding:26px 26px 0;overflow:hidden;
+    display:flex;flex-direction:column;
+    box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .step .num{
+    display:inline-flex;align-items:center;justify-content:center;
+    background:#000;color:#fff;font-size:12.5px;font-weight:700;
+    border-radius:999px;padding:3px 12px;margin-bottom:16px;align-self:flex-start;
+    font-variant-numeric:tabular-nums;
+  }
+  .step h3{font-size:21px;font-weight:700;margin-bottom:8px}
+  .step p{color:var(--text-2);font-size:15px;margin-bottom:24px}
+  .step .device{
+    margin-top:auto;align-self:center;width:72%;margin-bottom:-46%;
+    filter:drop-shadow(0 18px 28px rgba(0,0,0,.22));
+  }
+
+  /* features */
+  .features{background:var(--surface);border-radius:36px;padding:64px 48px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:44px}
+  .feat{background:var(--bg);border-radius:var(--radius);padding:28px}
+  .feat .ico{
+    width:58px;height:58px;border-radius:16px;background:var(--surface);
+    overflow:hidden;margin-bottom:16px;
+    box-shadow:0 1px 3px rgba(0,0,0,.07);
+  }
+  .feat .ico img{width:100%;height:100%;object-fit:cover;transform:scale(1.18)}
+  .feat h3{font-size:19px;font-weight:700;margin-bottom:6px}
+  .feat p{color:var(--text-2);font-size:15px}
+
+  /* faq */
+  .faq-list{max-width:760px}
+  details{
+    background:var(--surface);border-radius:18px;margin-bottom:12px;
+    box-shadow:0 1px 3px rgba(0,0,0,.05);overflow:hidden;
+  }
+  summary{
+    list-style:none;cursor:pointer;padding:20px 24px;
+    font-weight:700;font-size:16.5px;display:flex;align-items:center;gap:14px;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary::after{
+    content:"+";margin-inline-start:auto;font-size:22px;font-weight:400;color:var(--text-3);
+    transition:transform .2s ease;line-height:1;
+  }
+  details[open] summary::after{transform:rotate(45deg)}
+  details .a{padding:0 24px 20px;color:var(--text-2);font-size:15.5px;max-width:60em}
+
+  /* closing cta */
+  .cta{text-align:center;background:#000;color:#fff;border-radius:36px;padding:72px 32px}
+  .cta h2{color:#fff}
+  .cta p{color:#B9B9B9;margin:14px auto 30px;max-width:34em}
+  .cta .badges{justify-content:center}
+  .cta .badges-note{color:#8A8A99}
+
+  /* footer */
+  footer{border-top:1px solid var(--divider);padding:48px 0 40px;margin-top:40px}
+  .foot{display:flex;gap:56px;flex-wrap:wrap}
+  .foot .brand{font-size:18px}
+  .foot .logo-mark{width:26px;height:26px}
+  .foot-col h4{font-size:13px;font-weight:700;letter-spacing:.1em;color:var(--text-3);margin-bottom:12px}
+  .foot-col a{display:block;color:var(--text-2);font-size:14.5px;margin-bottom:8px}
+  .foot-col a:hover{color:var(--text)}
+  .foot-spacer{flex:1}
+  .copyright{margin-top:36px;font-size:13px;color:var(--text-3)}
+
+  @media (max-width:900px){
+    .nav-links{display:none}
+    .hero-grid{grid-template-columns:1fr}
+    .phones{height:560px;max-width:520px;margin:0 auto}
+    .steps{grid-template-columns:1fr}
+    .step .device{width:62%;max-width:250px;margin-bottom:-40%}
+    .feat-grid{grid-template-columns:1fr}
+    .features{padding:44px 24px}
+  }
+  @media (max-width:520px){
+    .phones{height:480px}
+    .phones .device{width:196px}
+    .phones .device.a{right:4px;top:16px;transform:rotate(5deg)}
+    .phones .device.b{left:4px;top:95px;transform:rotate(-6deg)}
+    .badge img{height:46px}
+    .nav .badge img{height:34px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .badge{transition:none}
+  }
 </style>
 </head>
 <body>
-  <svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-<rect width="200" height="200" rx="44" fill="#0c0c0c"/>
-<g stroke="#fff" stroke-width="9" stroke-linecap="round">
-<line x1="100" y1="74" x2="100" y2="53"/>
-<line x1="75.7" y1="80.9" x2="65" y2="62.4"/><line x1="124.3" y1="80.9" x2="135" y2="62.4"/>
-<line x1="57.9" y1="98.7" x2="39.4" y2="88"/><line x1="142.1" y1="98.7" x2="160.6" y2="88"/></g>
-<path d="M 63 123 A 37 37 0 0 1 137 123 Z" fill="#fff"/>
-<path d="M 20 150 Q 100 136 180 150" stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none"/>
-<g stroke="#0c0c0c" stroke-width="4" stroke-linecap="round" fill="none">
-<path d="M 79 110 q 6 -7 12 0"/><path d="M 109 110 q 6 -7 12 0"/>
-<path d="M 92 119 q 8 7 16 0"/></g>
-</svg>
-  <h1>Dawn</h1>
-  <div class="tag">לא מכבים. קמים.</div>
-  <div class="soon">בקרוב ב־App Store</div>
-  <p class="desc">שעון מעורר שאי אפשר לכבות בלי לקום באמת: שכיבות סמיכה מול המצלמה,
-  צילום השמיים, קריאת משנה בקול — משימת בוקר אחת, ואתם ערים. בלי נודניק, בלי שעוני גיבוי.</p>
-  <footer>
-    <a href="privacy.html">מדיניות פרטיות</a>
-    <a href="mailto:jacobsnethaniel@gmail.com">תמיכה</a>
-  </footer>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <img class="logo-mark" src="assets/logo-mark.png" alt="">
+      Dawn
+    </a>
+    <nav class="nav-links">
+      <a href="#how">איך זה עובד</a>
+      <a href="#features">יכולות</a>
+      <a href="#faq">שאלות נפוצות</a>
+    </nav>
+    <div class="nav-spacer"></div>
+    <div class="badges">
+      <span class="badge" title="בקרוב"><img src="assets/badge-appstore-he.svg" alt="הורידו ב-App Store"></span>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ─── hero ─── -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="chip"><span class="dot"></span>שעון המשימות הראשון שנבנה בעברית, לישראל</span>
+        <h1>קמים מוקדם.<br>בלי עוד סנוז.</h1>
+        <p class="lead">
+          Dawn הוא שעון מעורר שאי אפשר פשוט להשתיק. כדי לכבות אותו משלימים
+          משימה אמיתית — שכיבות סמיכה מול המצלמה, תרגילי חשבון, צילום של
+          השמיים או קריאת משנה בקול רם. עד שסיימתם, כבר יצאתם מהמיטה.
+        </p>
+        <div class="badges">
+          <span class="badge" title="בקרוב"><img src="assets/badge-appstore-he.svg" alt="הורידו ב-App Store"></span>
+          <span class="badge" title="בקרוב"><img src="assets/badge-googleplay-he.png" alt="קבלו את זה ב-Google Play"></span>
+        </div>
+        <p class="badges-note">האפליקציה בהרצה סגורה — קישורי ההורדה יעלו כאן ממש בקרוב.</p>
+      </div>
+      <div class="phones" aria-hidden="true">
+        <div class="device a">
+          <img class="shot" src="assets/screen-home.png" alt="" loading="eager">
+          <img class="frame" src="assets/phone-frame.png" alt="" loading="eager">
+        </div>
+        <div class="device b">
+          <img class="shot" src="assets/screen-missions.png" alt="" loading="eager">
+          <img class="frame" src="assets/phone-frame.png" alt="" loading="eager">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── how it works ─── -->
+  <section id="how">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">איך זה עובד</span>
+        <h2>שלושה צעדים, ובוקר אחד שנראה אחרת</h2>
+        <p class="sec-sub">ההגדרה לוקחת חצי דקה בערב. כל השאר קורה מחר על הבוקר.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="num">01</span>
+          <h3>מגדירים שעון ובוחרים משימה</h3>
+          <p>קובעים שעה, ימים ומשימת יקיצה: שכיבות סמיכה, סקוואטים, תרגילי חשבון, צילום השמיים, משנה ועוד.</p>
+          <div class="device">
+            <img class="shot" src="assets/screen-editor.png" alt="מסך יצירת שעון מעורר באפליקציית Dawn" loading="lazy">
+            <img class="frame" src="assets/phone-frame.png" alt="" loading="lazy">
+          </div>
+        </div>
+        <div class="step">
+          <span class="num">02</span>
+          <h3>השעון מצלצל — והמשימה מחכה</h3>
+          <p>הדרך היחידה לכבות את הצלצול היא לסיים את המשימה שבחרתם אתמול בלילה. סנוז? אין דבר כזה.</p>
+          <div class="device">
+            <img class="shot" src="assets/screen-missions.png" alt="מסך בחירת משימה באפליקציית Dawn" loading="lazy">
+            <img class="frame" src="assets/phone-frame.png" alt="" loading="lazy">
+          </div>
+        </div>
+        <div class="step">
+          <span class="num">03</span>
+          <h3>המשימה הושלמה. אתם כבר ערים</h3>
+          <p>עד שהמשימה נגמרת אתם כבר על הרגליים, עם רצף שגדל מיום ליום. הבוקר מתחיל — בלי מלחמות עם השעון.</p>
+          <div class="device">
+            <img class="shot" src="assets/screen-home.png" alt="מסך הבית של Dawn עם השעון הבא והרצף" loading="lazy">
+            <img class="frame" src="assets/phone-frame.png" alt="" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── features ─── -->
+  <section id="features">
+    <div class="wrap">
+      <div class="features">
+        <div class="sec-head" style="margin-bottom:0">
+          <span class="eyebrow">מעבר לשעון</span>
+          <h2>נבנה כדי שתתמידו</h2>
+          <p class="sec-sub">היקיצה היא רק ההתחלה — Dawn עוזר להפוך אותה להרגל.</p>
+        </div>
+        <div class="feat-grid">
+          <div class="feat">
+            <div class="ico"><img src="assets/icon-camera.png" alt=""></div>
+            <h3>אימות אמיתי במצלמה</h3>
+            <p>המצלמה סופרת את החזרות ומוודאת שבאמת קמתם — אי אפשר לרמות מהמיטה. כל העיבוד קורה על המכשיר בלבד, ושום תמונה לא עוזבת אותו.</p>
+          </div>
+          <div class="feat">
+            <div class="ico"><img src="assets/icon-flame.png" alt=""></div>
+            <h3>רצפים ואבני דרך</h3>
+            <p>כל בוקר שהשלמתם את המשימה מאריך את הרצף, ופותח תגים והישגים בדרך. שוברים את הרצף? מתחילים מאפס.</p>
+          </div>
+          <div class="feat">
+            <div class="ico"><img src="assets/icon-candles.png" alt=""></div>
+            <h3>שבת, חגים וזמני היום</h3>
+            <p>Dawn מדבר לוח עברי: השעונים מדלגים לבד על שבת וחג, אפשר לעגן שעון לזמני היום — למשל עשר דקות לפני הנץ — ומצב שבת מצלצל בלי לדרוש שום מגע במסך.</p>
+          </div>
+          <div class="feat">
+            <div class="ico"><img src="assets/icon-lock.png" alt=""></div>
+            <h3>חסימת אפליקציות</h3>
+            <p>נועלים את האפליקציות שמסיטות אתכם לפני השינה ובזמן שגרת הבוקר — פחות גלילה בלילה, פחות טלפון מהמיטה בבוקר.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── faq ─── -->
+  <section id="faq">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">יש שאלות?</span>
+        <h2>שאלות נפוצות</h2>
+      </div>
+      <div class="faq-list">
+        <details>
+          <summary>איך Dawn שונה משעון מעורר רגיל?</summary>
+          <div class="a">שעון רגיל אפשר לכבות בלחיצה מהמיטה — ולחזור לישון. את Dawn אפשר לכבות רק אחרי שמשלימים משימה אמיתית שבחרתם מראש, ולנמנם פשוט אי אפשר. עד שהמשימה הושלמה, כבר קמתם.</div>
+        </details>
+        <details>
+          <summary>איך האפליקציה יודעת שבאמת ביצעתי את המשימה?</summary>
+          <div class="a">לכל משימה יש אימות משלה: שכיבות סמיכה וסקוואטים נספרים דרך המצלמה עם זיהוי תנועה, משימות צילום דורשות תמונה אמיתית (שמיים, דשא, מיטה מסודרת), משימות קריאה מאזינות לקול שלכם, ותרגילי חשבון דורשים תשובות נכונות. בלי אימות — הצלצול ממשיך.</div>
+        </details>
+        <details>
+          <summary>אילו משימות אפשר לבחור?</summary>
+          <div class="a">שכיבות סמיכה, סקוואטים, תרגילי חשבון, צילום השמיים, חיפוש חפץ בבית, סידור המיטה, לגעת בדשא, אמירה חיובית בקול — וגם קריאת משנה או פסוק מפרשת השבוע. בוחרים את מה שבאמת יוציא אתכם מהמיטה.</div>
+        </details>
+        <details>
+          <summary>מה קורה בשבת ובחג?</summary>
+          <div class="a">זה בדיוק מה ש-Dawn נבנה בשבילו: השעונים מדלגים אוטומטית על שבתות וחגים לפי הלוח העברי, בלי שתצטרכו לזכור לכבות כלום. מצב שבת מאפשר צלצול שנרגע מעצמו — בלי מסך, בלי מגע. ואפשר גם לעגן שעון לזמני היום, כמו זריחה או נץ החמה.</div>
+        </details>
+        <details>
+          <summary>אני ישן חזק במיוחד. זה יעבוד עליי?</summary>
+          <div class="a">בשבילכם זה קיים. הצלצול עובר גם על מצב שקט ומצבי ריכוז, והוא לא נפסק עד שמשלימים את המשימה — קימה, תנועה, חשיבה. אי אפשר "להעלים" אותו בלחיצה מתחת לשמיכה.</div>
+        </details>
+        <details>
+          <summary>מה עם הפרטיות שלי? המצלמה והמיקרופון בשימוש…</summary>
+          <div class="a">כל האימות רץ על המכשיר בלבד: ספירת התרגילים, זיהוי התמונות וזיהוי הדיבור מעובדים מקומית באייפון, ותמונות או הקלטות מהמשימות לא נשלחות לשום שרת. פירוט מלא במדיניות הפרטיות שלנו.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── cta ─── -->
+  <section>
+    <div class="wrap">
+      <div class="cta">
+        <h2>הבוקר הבא שלכם מתחיל הערב</h2>
+        <p>מגדירים שעון, בוחרים משימה, ונותנים ל-Dawn לעשות את השאר. נתראה בזריחה.</p>
+        <div class="badges">
+          <span class="badge" title="בקרוב"><img src="assets/badge-appstore-he.svg" alt="הורידו ב-App Store"></span>
+          <span class="badge" title="בקרוב"><img src="assets/badge-googleplay-he.png" alt="קבלו את זה ב-Google Play"></span>
+        </div>
+        <p class="badges-note">זמין בקרוב לאייפון. גרסת אנדרואיד בהמשך.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <a class="brand" href="#top">
+        <img class="logo-mark" src="assets/logo-mark.png" alt="">
+        Dawn
+      </a>
+      <div class="foot-spacer"></div>
+      <div class="foot-col">
+        <h4>משפטי</h4>
+        <a href="privacy.html">מדיניות פרטיות</a>
+        <a href="terms.html">תנאי שימוש</a>
+        <a href="delete-account.html">מחיקת חשבון</a>
+      </div>
+      <div class="foot-col">
+        <h4>יצירת קשר</h4>
+        <a href="mailto:jacobsnethaniel@gmail.com">jacobsnethaniel@gmail.com</a>
+      </div>
+    </div>
+    <p class="copyright">© 2026 Dawn. כל הזכויות שמורות.</p>
+  </div>
+</footer>
+
 </body>
 </html>
