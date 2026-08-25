@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dawn — שעון מעורר עם משימות</title>
-<meta name="description" content="Dawn הוא שעון מעורר בעברית שאי אפשר סתם לכבות: משלימים משימה אמיתית — שכיבות סמיכה, תרגילי חשבון, צילום השמיים — ורק אז הוא נרגע. כולל דילוג אוטומטי על שבת וחג.">
+<meta name="description" content="Dawn הוא שעון מעורר בעברית שאי אפשר סתם לכבות: משלימים משימה אמיתית — שכיבות סמיכה, תרגילי חשבון, צילום השמיים — ורק אז הוא נרגע. כולל ימי מנוחה לשבת שלא שוברים את הרצף.">
 <link rel="icon" type="image/png" href="assets/app-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -96,8 +96,8 @@
     background:radial-gradient(closest-side, color-mix(in srgb, var(--orb) 26%, transparent), transparent 74%);
   }
   .phones .device{position:absolute;width:262px}
-  .phones .device.a{right:26px;top:24px;transform:rotate(6deg);z-index:2}
-  .phones .device.b{left:12px;top:120px;transform:rotate(-7deg)}
+  .phones .device.a{right:26px;top:48px;transform:rotate(6deg);z-index:2}
+  .phones .device.b{left:12px;top:144px;transform:rotate(-7deg)}
 
   /* ─── sections ─── */
   section{padding:84px 0}
@@ -191,8 +191,8 @@
   @media (max-width:520px){
     .phones{height:480px}
     .phones .device{width:196px}
-    .phones .device.a{right:4px;top:16px;transform:rotate(5deg)}
-    .phones .device.b{left:4px;top:95px;transform:rotate(-6deg)}
+    .phones .device.a{right:4px;top:36px;transform:rotate(5deg)}
+    .phones .device.b{left:4px;top:115px;transform:rotate(-6deg)}
     .badge img{height:46px}
     .nav .badge img{height:34px}
   }
@@ -316,13 +316,13 @@
           </div>
           <div class="feat">
             <div class="ico"><img src="assets/icon-candles.png" alt=""></div>
-            <h3>שבת, חגים וזמני היום</h3>
-            <p>Dawn מדבר לוח עברי: השעונים מדלגים לבד על שבת וחג, אפשר לעגן שעון לזמני היום — למשל עשר דקות לפני הנץ — ומצב שבת מצלצל בלי לדרוש שום מגע במסך.</p>
+            <h3>ימי מנוחה ושבת</h3>
+            <p>בוחרים עד שני ימי מנוחה בשבוע — למשל שבת — והרצף נשמר גם כשישנים עד מאוחר. השעונים מצלצלים רק בימים שבחרתם.</p>
           </div>
           <div class="feat">
-            <div class="ico"><img src="assets/icon-lock.png" alt=""></div>
-            <h3>חסימת אפליקציות</h3>
-            <p>נועלים את האפליקציות שמסיטות אתכם לפני השינה ובזמן שגרת הבוקר — פחות גלילה בלילה, פחות טלפון מהמיטה בבוקר.</p>
+            <div class="ico"><img src="assets/icon-book.png" alt=""></div>
+            <h3>משנה ופסוקים בקול</h3>
+            <p>משימות קריאה תורניות: קוראים משנה או פסוק בקול רם, וזיהוי הדיבור — כולו על המכשיר — מאשר שבאמת קראתם. הטקסטים שמורים באפליקציה וזמינים גם בלי אינטרנט.</p>
           </div>
         </div>
       </div>
@@ -351,7 +351,7 @@
         </details>
         <details>
           <summary>מה קורה בשבת ובחג?</summary>
-          <div class="a">זה בדיוק מה ש-Dawn נבנה בשבילו: השעונים מדלגים אוטומטית על שבתות וחגים לפי הלוח העברי, בלי שתצטרכו לזכור לכבות כלום. מצב שבת מאפשר צלצול שנרגע מעצמו — בלי מסך, בלי מגע. ואפשר גם לעגן שעון לזמני היום, כמו זריחה או נץ החמה.</div>
+          <div class="a">מגדירים את שבת (ועוד יום, אם רוצים) כיום מנוחה — והרצף נשמר גם בלי משימת בוקר. השעונים עצמם מצלצלים רק בימים שסימנתם, כך ששבת נשארת שקטה. דילוג אוטומטי על חגים לפי הלוח העברי נמצא בעבודה.</div>
         </details>
         <details>
           <summary>אני ישן חזק במיוחד. זה יעבוד עליי?</summary>
