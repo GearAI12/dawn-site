@@ -184,9 +184,14 @@
     .hero-grid{grid-template-columns:1fr}
     .phones{height:700px;max-width:520px;margin:0 auto}
     .steps{grid-template-columns:1fr}
-    .step .device{width:62%;max-width:250px;margin-bottom:-40%}
+    .step .device{width:72%;max-width:250px;margin-bottom:-40%}
     .feat-grid{grid-template-columns:repeat(2,1fr)}
     .features{padding:44px 24px}
+  }
+  @media (max-width:640px){
+    .nav{gap:16px}
+    .nav .badges{flex-wrap:nowrap}
+    .nav .badges .badge:nth-child(2){display:none}
   }
   @media (max-width:520px){
     .phones{height:530px}
